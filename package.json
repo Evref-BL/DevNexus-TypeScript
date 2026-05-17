@@ -1,0 +1,37 @@
+{
+  "name": "@evref-bl/dev-nexus-typescript",
+  "version": "0.1.0-alpha.0",
+  "private": false,
+  "description": "TypeScript and JavaScript tooling plugin for DevNexus worktrees.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "check": "npm run build && npm test"
+  },
+  "dependencies": {
+    "dev-nexus": "npm:@evref-bl/dev-nexus@0.1.0-alpha.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  }
+}
