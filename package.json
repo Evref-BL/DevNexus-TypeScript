@@ -27,7 +27,7 @@
     "check": "npm run build && npm test"
   },
   "dependencies": {
-    "dev-nexus": "npm:@evref-bl/dev-nexus@0.1.0-alpha.4"
+    "dev-nexus": "npm:@evref-bl/dev-nexus@0.1.0-alpha.16"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
