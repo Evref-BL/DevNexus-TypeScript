@@ -1,5 +1,6 @@
 import type { NexusProjectPluginConfig } from "dev-nexus";
 import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupInventory.js";
+import { devNexusTypeScriptImportGraphAnalysisCapability } from "./typeScriptImportGraphAnalysis.js";
 import { devNexusTypeScriptMcpDiagnosticsTracerCapability } from "./typeScriptMcpDiagnosticsTracer.js";
 import { typeScriptProjectSetupWorkerFragmentCapabilities } from "./typeScriptWorkerGuidance.js";
 import { devNexusTypeScriptProjectedSkillCapabilities } from "./typeScriptWorkflowSkills.js";
@@ -37,6 +38,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
       },
       ...devNexusTypeScriptProjectedSkillCapabilities(),
       devNexusTypeScriptMcpDiagnosticsTracerCapability(),
+      devNexusTypeScriptImportGraphAnalysisCapability(),
       {
         kind: "worker_context_fragment",
         id: "context-typescript-toolchain-boundary",
