@@ -87,12 +87,18 @@ experiments:
 
 ```ts
 import {
+  analyzeTypeScriptImportGraph,
   traceTypeScriptDiagnostics,
   traceTypeScriptProjectStatus,
 } from "@evref-bl/dev-nexus-typescript";
 
 const status = traceTypeScriptProjectStatus({ projectRoot });
 const diagnostics = traceTypeScriptDiagnostics({ projectRoot });
+const graph = analyzeTypeScriptImportGraph({
+  projectRoot,
+  include: ["src/**/*.ts"],
+  ignore: ["src/generated/**"],
+});
 ```
 
 The project-status operation reports setup inventory, available scripts,
@@ -102,6 +108,12 @@ diagnostics through the TypeScript compiler API, and groups results by file and
 diagnostic code. If dependency projection or the TypeScript binary is missing,
 the tracer returns setup blockers instead of installing packages, running `npx`,
 or writing source files.
+
+The import-graph operation uses the same read-only compiler setup to report
+source module edges, import hubs, deterministic cycles, unresolved imports, and
+ignored generated files. Scope can be bounded with `include` patterns and noisy
+folders can be omitted with `ignore` patterns so agents can cite compact graph
+facts in handoffs, architecture reviews, and pull requests.
 
 ## Boundaries
 
