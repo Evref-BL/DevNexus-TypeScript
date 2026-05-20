@@ -1,0 +1,14 @@
+{
+  "id": "typescript-codemod-planning",
+  "name": "typescript-codemod-planning",
+  "description": "Dry-run TypeScript codemod planning workflow for safe large-scale edits, AST matching, sample validation, rollback strategy, and human approval boundaries. Use when Codex must design or evaluate a TypeScript codemod before write-capable execution.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-codemod-planning"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

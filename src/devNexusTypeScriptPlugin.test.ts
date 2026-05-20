@@ -105,12 +105,18 @@ describe("DevNexus TypeScript plugin", () => {
     });
     expect(config.capabilities.map((capability) => capability.id)).toEqual([
       "node-modules",
+      "skill-typescript-diagnose",
+      "skill-typescript-refactor",
+      "skill-typescript-test-hygiene",
+      "skill-typescript-api-boundaries",
+      "skill-typescript-codemod-planning",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
     ]);
     expect(new Set(config.capabilities.map((capability) => capability.kind))).toEqual(
       new Set([
         "dependency_projection",
+        "projected_skill",
         "worker_context_fragment",
         "worker_briefing_fragment",
       ]),
@@ -161,6 +167,63 @@ describe("DevNexus TypeScript plugin", () => {
     ]);
   });
 
+  it("projects baseline TypeScript workflow skills", () => {
+    expect(capabilitiesOfKind("projected_skill")).toEqual([
+      {
+        kind: "projected_skill",
+        id: "skill-typescript-diagnose",
+        description:
+          "Project the TypeScript compiler/runtime diagnosis workflow skill.",
+        skillId: "typescript-diagnose",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
+        id: "skill-typescript-refactor",
+        description: "Project the bounded TypeScript refactoring workflow skill.",
+        skillId: "typescript-refactor",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
+        id: "skill-typescript-test-hygiene",
+        description: "Project the TypeScript test hygiene workflow skill.",
+        skillId: "typescript-test-hygiene",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
+        id: "skill-typescript-api-boundaries",
+        description: "Project the TypeScript API boundary review workflow skill.",
+        skillId: "typescript-api-boundaries",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
+        id: "skill-typescript-codemod-planning",
+        description: "Project the dry-run TypeScript codemod planning workflow skill.",
+        skillId: "typescript-codemod-planning",
+        targetAgents: ["codex", "claude"],
+      },
+    ]);
+
+    const projected = projectPluginCapabilityProjections({
+      plugins: [devNexusTypeScriptDevNexusPluginConfig()],
+    });
+
+    expect(
+      projected[0]!.capabilities
+        .filter((capability) => capability.kind === "projected_skill")
+        .map((capability) => capability.skillId),
+    ).toEqual([
+      "typescript-diagnose",
+      "typescript-refactor",
+      "typescript-test-hygiene",
+      "typescript-api-boundaries",
+      "typescript-codemod-planning",
+    ]);
+  });
+
   it("provides worker guidance without package-manager mutation", () => {
     const contextFragment = capabilitiesOfKind("worker_context_fragment")[0];
     const briefingFragment = capabilitiesOfKind("worker_briefing_fragment")[0];
@@ -192,11 +255,16 @@ describe("DevNexus TypeScript plugin", () => {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
         version: "0.1.0-alpha.0",
-        capabilityCount: 3,
+        capabilityCount: 8,
       },
     ]);
     expect(projected[0]!.capabilities.map((capability) => capability.kind)).toEqual([
       "dependency_projection",
+      "projected_skill",
+      "projected_skill",
+      "projected_skill",
+      "projected_skill",
+      "projected_skill",
       "worker_context_fragment",
       "worker_briefing_fragment",
     ]);
@@ -210,6 +278,11 @@ describe("DevNexus TypeScript plugin", () => {
 
     expect(config.capabilities.map((capability) => capability.id)).toEqual([
       "node-modules",
+      "skill-typescript-diagnose",
+      "skill-typescript-refactor",
+      "skill-typescript-test-hygiene",
+      "skill-typescript-api-boundaries",
+      "skill-typescript-codemod-planning",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
       "context-typescript-setup-inventory",

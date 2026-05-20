@@ -1,0 +1,14 @@
+{
+  "id": "typescript-test-hygiene",
+  "name": "typescript-test-hygiene",
+  "description": "TypeScript test hygiene workflow for adding focused coverage, reducing brittle tests, keeping fixtures realistic, and choosing appropriate package scripts. Use when Codex must create, repair, or simplify TypeScript tests without expanding the suite unnecessarily.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-test-hygiene"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

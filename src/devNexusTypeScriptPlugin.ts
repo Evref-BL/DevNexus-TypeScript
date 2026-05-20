@@ -1,6 +1,7 @@
 import type { NexusProjectPluginConfig } from "dev-nexus";
 import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupInventory.js";
 import { typeScriptProjectSetupWorkerFragmentCapabilities } from "./typeScriptWorkerGuidance.js";
+import { devNexusTypeScriptProjectedSkillCapabilities } from "./typeScriptWorkflowSkills.js";
 
 export const devNexusTypeScriptPluginId = "dev-nexus-typescript";
 export const devNexusTypeScriptPluginName = "DevNexus TypeScript";
@@ -33,6 +34,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
         reason:
           "Resolve local package binaries such as tsc and test runners from prepared worktrees.",
       },
+      ...devNexusTypeScriptProjectedSkillCapabilities(),
       {
         kind: "worker_context_fragment",
         id: "context-typescript-toolchain-boundary",

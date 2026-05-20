@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Test Hygiene"
+  short_description: "Keep TypeScript tests focused and maintainable."
+  default_prompt: "Use TypeScript Test Hygiene to improve or add TypeScript tests."

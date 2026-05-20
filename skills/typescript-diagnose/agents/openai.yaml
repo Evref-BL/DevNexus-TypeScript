@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Diagnose"
+  short_description: "Debug TypeScript compiler and runtime failures."
+  default_prompt: "Use TypeScript Diagnose to reproduce and isolate a TypeScript failure."
