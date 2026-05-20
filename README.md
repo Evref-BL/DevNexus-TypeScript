@@ -37,6 +37,27 @@ detection, typed linting detection, structural-search tooling, unused-code
 tooling, blockers, and recommendations. It does not run package-manager
 commands, install dependencies, or mutate the project.
 
+The same inventory can be exposed to workers through DevNexus worker context and
+briefing fragments:
+
+```ts
+import {
+  devNexusTypeScriptDevNexusPluginConfig,
+  inspectTypeScriptProjectSetup,
+} from "@evref-bl/dev-nexus-typescript";
+
+const inventory = inspectTypeScriptProjectSetup({ projectRoot });
+const plugin = devNexusTypeScriptDevNexusPluginConfig({
+  setupInventory: inventory,
+  targetComponents: ["typescript"],
+});
+```
+
+These generated fragments summarize available package scripts, recommended
+focused verification commands, dependency projection state, missing binaries,
+and setup blockers. Blockers remain advisory setup facts; the plugin does not
+choose implementation work or repair missing dependencies.
+
 ## Boundaries
 
 - The plugin does not run `npm install`, `pnpm install`, `yarn install`, or
