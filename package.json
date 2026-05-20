@@ -4,6 +4,10 @@
   "private": false,
   "description": "TypeScript and JavaScript tooling plugin for DevNexus worktrees.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Evref-BL/DevNexus-TypeScript.git"
+  },
   "type": "module",
   "bin": {
     "dev-nexus-typescript": "dist/cli.js"
