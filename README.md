@@ -88,6 +88,7 @@ experiments:
 ```ts
 import {
   analyzeTypeScriptImportGraph,
+  planTypeScriptBulkRewrite,
   traceTypeScriptDiagnostics,
   traceTypeScriptProjectStatus,
 } from "@evref-bl/dev-nexus-typescript";
@@ -98,6 +99,14 @@ const graph = analyzeTypeScriptImportGraph({
   projectRoot,
   include: ["src/**/*.ts"],
   ignore: ["src/generated/**"],
+});
+const rewritePlan = planTypeScriptBulkRewrite({
+  projectRoot,
+  rewrite: {
+    kind: "renameIdentifier",
+    from: "oldName",
+    to: "newName",
+  },
 });
 ```
 
@@ -114,6 +123,13 @@ source module edges, import hubs, deterministic cycles, unresolved imports, and
 ignored generated files. Scope can be bounded with `include` patterns and noisy
 folders can be omitted with `ignore` patterns so agents can cite compact graph
 facts in handoffs, architecture reviews, and pull requests.
+
+The bulk-rewrite planning operation is the safe, preview-only version of a
+codemod. It uses the inspected project's TypeScript compiler API to find syntax
+matches and returns matched files, matched nodes, proposed edit previews, rewrite
+categories, risks, and verification commands. Current policy records
+`applyAllowed: false`; agents can cite the plan before manual edits or future
+human-approved apply workflows, but this package does not write files.
 
 ## Boundaries
 

@@ -112,6 +112,7 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-codemod-planning",
       "mcp-typescript-diagnostics-tracer",
       "mcp-typescript-import-graph-analysis",
+      "mcp-typescript-bulk-rewrite-planning",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
     ]);
@@ -204,7 +205,8 @@ describe("DevNexus TypeScript plugin", () => {
       {
         kind: "projected_skill",
         id: "skill-typescript-codemod-planning",
-        description: "Project the dry-run TypeScript codemod planning workflow skill.",
+        description:
+          "Project the dry-run TypeScript bulk rewrite planning workflow skill.",
         skillId: "typescript-codemod-planning",
         targetAgents: ["codex", "claude"],
       },
@@ -262,6 +264,20 @@ describe("DevNexus TypeScript plugin", () => {
           },
         ],
       },
+      {
+        kind: "mcp_server",
+        id: "mcp-typescript-bulk-rewrite-planning",
+        description:
+          "Advertise read-only TypeScript bulk rewrite planning operations.",
+        serverName: "dev-nexus-typescript",
+        tools: [
+          {
+            name: "typescript.bulkRewritePlan",
+            description:
+              "Preview TypeScript bulk rewrite plans without writing source files.",
+          },
+        ],
+      },
     ]);
 
     const projected = projectPluginCapabilityProjections({
@@ -303,6 +319,21 @@ describe("DevNexus TypeScript plugin", () => {
         },
       ],
     });
+    expect(
+      projected[0]!.capabilities.find(
+        (capability) => capability.id === "mcp-typescript-bulk-rewrite-planning",
+      ),
+    ).toMatchObject({
+      kind: "mcp_server",
+      serverName: "dev-nexus-typescript",
+      tools: [
+        {
+          name: "typescript.bulkRewritePlan",
+          description:
+            "Preview TypeScript bulk rewrite plans without writing source files.",
+        },
+      ],
+    });
   });
 
   it("provides worker guidance without package-manager mutation", () => {
@@ -336,7 +367,7 @@ describe("DevNexus TypeScript plugin", () => {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
         version: "0.1.0-alpha.0",
-        capabilityCount: 10,
+        capabilityCount: 11,
       },
     ]);
     expect(projected[0]!.capabilities.map((capability) => capability.kind)).toEqual([
@@ -346,6 +377,7 @@ describe("DevNexus TypeScript plugin", () => {
       "projected_skill",
       "projected_skill",
       "projected_skill",
+      "mcp_server",
       "mcp_server",
       "mcp_server",
       "worker_context_fragment",
@@ -368,6 +400,7 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-codemod-planning",
       "mcp-typescript-diagnostics-tracer",
       "mcp-typescript-import-graph-analysis",
+      "mcp-typescript-bulk-rewrite-planning",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
       "context-typescript-setup-inventory",

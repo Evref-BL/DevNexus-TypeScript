@@ -30,7 +30,7 @@ const projectedSkillDescriptions: Record<
   "typescript-api-boundaries":
     "Project the TypeScript API boundary review workflow skill.",
   "typescript-codemod-planning":
-    "Project the dry-run TypeScript codemod planning workflow skill.",
+    "Project the dry-run TypeScript bulk rewrite planning workflow skill.",
 };
 
 export function devNexusTypeScriptProjectedSkillCapabilities(): NexusPluginProjectedSkillCapability[] {
