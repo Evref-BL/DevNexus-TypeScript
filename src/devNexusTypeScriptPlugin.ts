@@ -8,7 +8,7 @@ import { devNexusTypeScriptProjectedSkillCapabilities } from "./typeScriptWorkfl
 
 export const devNexusTypeScriptPluginId = "dev-nexus-typescript";
 export const devNexusTypeScriptPluginName = "DevNexus TypeScript";
-export const devNexusTypeScriptPluginVersion = "0.1.0-alpha.0";
+export const devNexusTypeScriptPluginVersion = "0.1.0-alpha.1";
 
 export interface DevNexusTypeScriptDevNexusPluginConfigOptions {
   setupInventory?: TypeScriptProjectSetupInventory;
@@ -19,6 +19,8 @@ export interface DevNexusTypeScriptDevNexusPluginConfigOptions {
 export function devNexusTypeScriptDevNexusPluginConfig(
   options: DevNexusTypeScriptDevNexusPluginConfigOptions = {},
 ): NexusProjectPluginConfig {
+  const targetComponents = targetComponentsProperty(options.targetComponents);
+
   return {
     id: devNexusTypeScriptPluginId,
     name: devNexusTypeScriptPluginName,
@@ -34,6 +36,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
         target: "node_modules",
         required: false,
         sourceControl: "support",
+        ...targetComponents,
         reason:
           "Resolve local package binaries such as tsc and test runners from prepared worktrees.",
       },
@@ -51,6 +54,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
           "Use projected dependencies when available, and report missing dependency context as a setup blocker instead of silently fetching packages.",
         ].join(" "),
         targetAgents: ["codex", "claude"],
+        ...targetComponents,
         provenance: "DevNexus TypeScript plugin",
       },
       {
@@ -64,6 +68,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
           "If package binaries are unavailable, report the setup blocker instead of using npx package fetches as a substitute.",
         ].join(" "),
         targetAgents: ["codex", "claude"],
+        ...targetComponents,
         provenance: "DevNexus TypeScript plugin",
       },
       ...(options.setupInventory
@@ -75,4 +80,12 @@ export function devNexusTypeScriptDevNexusPluginConfig(
         : []),
     ],
   };
+}
+
+function targetComponentsProperty(
+  targetComponents: string[] | undefined,
+): { targetComponents?: string[] } {
+  return targetComponents && targetComponents.length > 0
+    ? { targetComponents }
+    : {};
 }

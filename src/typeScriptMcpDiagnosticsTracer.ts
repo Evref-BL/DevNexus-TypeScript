@@ -2,6 +2,11 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import type { NexusPluginMcpServerCapability } from "dev-nexus";
 import {
+  devNexusTypeScriptMcpArgs,
+  devNexusTypeScriptMcpCommand,
+  devNexusTypeScriptMcpServerName,
+} from "./typeScriptMcpServerConfig.js";
+import {
   inspectTypeScriptProjectSetup,
   type InspectTypeScriptProjectSetupInput,
   type TypeScriptProjectSetupInventory,
@@ -123,12 +128,14 @@ export function devNexusTypeScriptMcpDiagnosticsTracerCapability(): NexusPluginM
     id: "mcp-typescript-diagnostics-tracer",
     description:
       "Advertise read-only TypeScript project status and diagnostics tracer operations.",
-    serverName: "dev-nexus-typescript",
+    serverName: devNexusTypeScriptMcpServerName,
+    command: devNexusTypeScriptMcpCommand,
+    args: [...devNexusTypeScriptMcpArgs],
     tools: typeScriptMcpDiagnosticsTracerToolDescriptors.map((tool) => ({
       name: tool.name,
       description: tool.description,
     })),
-  };
+  } as NexusPluginMcpServerCapability;
 }
 
 export function traceTypeScriptProjectStatus(
