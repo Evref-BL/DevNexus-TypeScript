@@ -20,6 +20,23 @@ worktrees can then use the declared `dependency_projection` to resolve local
 package binaries such as `tsc` or test runners without copying dependencies or
 running package installs.
 
+## Setup Inventory
+
+DevNexus TypeScript also exposes a read-only setup inventory helper for
+TypeScript and JavaScript projects:
+
+```ts
+import { inspectTypeScriptProjectSetup } from "@evref-bl/dev-nexus-typescript";
+
+const inventory = inspectTypeScriptProjectSetup({ projectRoot });
+```
+
+The inventory reports package-manager lockfiles, package scripts, dependency
+projection state, TypeScript configuration, project references, test framework
+detection, typed linting detection, structural-search tooling, unused-code
+tooling, blockers, and recommendations. It does not run package-manager
+commands, install dependencies, or mutate the project.
+
 ## Boundaries
 
 - The plugin does not run `npm install`, `pnpm install`, `yarn install`, or
