@@ -110,6 +110,7 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",
+      "mcp-typescript-diagnostics-tracer",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
     ]);
@@ -117,6 +118,7 @@ describe("DevNexus TypeScript plugin", () => {
       new Set([
         "dependency_projection",
         "projected_skill",
+        "mcp_server",
         "worker_context_fragment",
         "worker_briefing_fragment",
       ]),
@@ -224,6 +226,55 @@ describe("DevNexus TypeScript plugin", () => {
     ]);
   });
 
+  it("advertises read-only TypeScript MCP diagnostics tracer operations", () => {
+    expect(capabilitiesOfKind("mcp_server")).toEqual([
+      {
+        kind: "mcp_server",
+        id: "mcp-typescript-diagnostics-tracer",
+        description:
+          "Advertise read-only TypeScript project status and diagnostics tracer operations.",
+        serverName: "dev-nexus-typescript",
+        tools: [
+          {
+            name: "typescript.projectStatus",
+            description:
+              "Read TypeScript project setup status, scripts, compiler availability, and setup blockers.",
+          },
+          {
+            name: "typescript.diagnostics",
+            description:
+              "Read TypeScript compiler diagnostics grouped by file and diagnostic code.",
+          },
+        ],
+      },
+    ]);
+
+    const projected = projectPluginCapabilityProjections({
+      plugins: [devNexusTypeScriptDevNexusPluginConfig()],
+    });
+
+    expect(
+      projected[0]!.capabilities.find(
+        (capability) => capability.id === "mcp-typescript-diagnostics-tracer",
+      ),
+    ).toMatchObject({
+      kind: "mcp_server",
+      serverName: "dev-nexus-typescript",
+      tools: [
+        {
+          name: "typescript.projectStatus",
+          description:
+            "Read TypeScript project setup status, scripts, compiler availability, and setup blockers.",
+        },
+        {
+          name: "typescript.diagnostics",
+          description:
+            "Read TypeScript compiler diagnostics grouped by file and diagnostic code.",
+        },
+      ],
+    });
+  });
+
   it("provides worker guidance without package-manager mutation", () => {
     const contextFragment = capabilitiesOfKind("worker_context_fragment")[0];
     const briefingFragment = capabilitiesOfKind("worker_briefing_fragment")[0];
@@ -255,7 +306,7 @@ describe("DevNexus TypeScript plugin", () => {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
         version: "0.1.0-alpha.0",
-        capabilityCount: 8,
+        capabilityCount: 9,
       },
     ]);
     expect(projected[0]!.capabilities.map((capability) => capability.kind)).toEqual([
@@ -265,6 +316,7 @@ describe("DevNexus TypeScript plugin", () => {
       "projected_skill",
       "projected_skill",
       "projected_skill",
+      "mcp_server",
       "worker_context_fragment",
       "worker_briefing_fragment",
     ]);
@@ -283,6 +335,7 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",
+      "mcp-typescript-diagnostics-tracer",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
       "context-typescript-setup-inventory",

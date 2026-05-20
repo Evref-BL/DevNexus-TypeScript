@@ -80,6 +80,29 @@ focused verification commands, dependency projection state, missing binaries,
 and setup blockers. Blockers remain advisory setup facts; the plugin does not
 choose implementation work or repair missing dependencies.
 
+## MCP Diagnostics Tracer
+
+DevNexus TypeScript exposes a narrow read-only tracer for TypeScript-aware MCP
+experiments:
+
+```ts
+import {
+  traceTypeScriptDiagnostics,
+  traceTypeScriptProjectStatus,
+} from "@evref-bl/dev-nexus-typescript";
+
+const status = traceTypeScriptProjectStatus({ projectRoot });
+const diagnostics = traceTypeScriptDiagnostics({ projectRoot });
+```
+
+The project-status operation reports setup inventory, available scripts,
+selected `tsconfig`, compiler availability, and setup blockers. The diagnostics
+operation loads the inspected project's own `typescript` package, reads compiler
+diagnostics through the TypeScript compiler API, and groups results by file and
+diagnostic code. If dependency projection or the TypeScript binary is missing,
+the tracer returns setup blockers instead of installing packages, running `npx`,
+or writing source files.
+
 ## Boundaries
 
 - The plugin does not run `npm install`, `pnpm install`, `yarn install`, or
