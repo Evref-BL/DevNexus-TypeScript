@@ -1,7 +1,7 @@
 {
   "id": "typescript-codemod-planning",
   "name": "typescript-codemod-planning",
-  "description": "Dry-run TypeScript codemod planning workflow for safe large-scale edits, AST matching, sample validation, rollback strategy, and human approval boundaries. Use when Codex must design or evaluate a TypeScript codemod before write-capable execution.",
+  "description": "Dry-run TypeScript bulk rewrite planning workflow for safe repeated mechanical edits, AST matching, preview evidence, rollback strategy, and human approval boundaries. Use when Codex must design or evaluate a TypeScript bulk rewrite/codemod before any broad edit.",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "source": {
