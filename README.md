@@ -20,6 +20,28 @@ worktrees can then use the declared `dependency_projection` to resolve local
 package binaries such as `tsc` or test runners without copying dependencies or
 running package installs.
 
+## Workflow Skills
+
+DevNexus TypeScript ships baseline workflow skills for TypeScript diagnosis,
+bounded refactoring, test hygiene, API boundary review, and dry-run codemod
+planning. The plugin config declares them as `projected_skill` capabilities, and
+the package also exports DevNexus skill definitions for projects that
+materialize package-owned skills:
+
+```ts
+import {
+  devNexusTypeScriptDevNexusPluginConfig,
+  devNexusTypeScriptSkillDefinitions,
+} from "@evref-bl/dev-nexus-typescript";
+
+const plugin = devNexusTypeScriptDevNexusPluginConfig();
+const skills = devNexusTypeScriptSkillDefinitions();
+```
+
+The skills are concise playbooks. They do not replace TypeScript, test runners,
+linters, codemod tools, or project policy; they help agents choose the right
+existing setup and verification path.
+
 ## Setup Inventory
 
 DevNexus TypeScript also exposes a read-only setup inventory helper for

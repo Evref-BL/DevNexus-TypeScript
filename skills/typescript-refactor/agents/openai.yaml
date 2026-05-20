@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Refactor"
+  short_description: "Plan and verify TypeScript refactors."
+  default_prompt: "Use TypeScript Refactor to make a bounded TypeScript design improvement."

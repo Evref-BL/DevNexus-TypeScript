@@ -1,0 +1,14 @@
+{
+  "id": "typescript-diagnose",
+  "name": "typescript-diagnose",
+  "description": "Systematic TypeScript diagnosis workflow for compiler errors, runtime regressions, failing package scripts, unavailable local binaries, and setup blockers in TypeScript or JavaScript projects. Use when Codex must reproduce, isolate, fix, and verify TypeScript failures without installing dependencies or fetching tools automatically.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-diagnose"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

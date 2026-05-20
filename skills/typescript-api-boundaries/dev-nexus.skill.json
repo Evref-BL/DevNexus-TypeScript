@@ -1,0 +1,14 @@
+{
+  "id": "typescript-api-boundaries",
+  "name": "typescript-api-boundaries",
+  "description": "TypeScript API boundary review workflow for public exports, package entrypoints, type-only exports, barrels, compatibility, and module ownership. Use when Codex must add, remove, or review exported TypeScript contracts or package-facing APIs.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-api-boundaries"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Codemod Planning"
+  short_description: "Plan TypeScript codemods without executing writes."
+  default_prompt: "Use TypeScript Codemod Planning to design a safe dry-run TypeScript codemod."

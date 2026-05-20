@@ -1,0 +1,14 @@
+{
+  "id": "typescript-refactor",
+  "name": "typescript-refactor",
+  "description": "Bounded TypeScript refactoring workflow for improving module locality, reducing duplication, splitting broad files, moving types, and preserving public behavior. Use when Codex must change TypeScript structure while keeping verification focused and API compatibility explicit.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-refactor"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript API Boundaries"
+  short_description: "Review TypeScript public API and module boundaries."
+  default_prompt: "Use TypeScript API Boundaries to inspect or change an exported TypeScript API."
