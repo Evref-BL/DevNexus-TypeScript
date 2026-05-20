@@ -1,10 +1,20 @@
 import type { NexusProjectPluginConfig } from "dev-nexus";
+import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupInventory.js";
+import { typeScriptProjectSetupWorkerFragmentCapabilities } from "./typeScriptWorkerGuidance.js";
 
 export const devNexusTypeScriptPluginId = "dev-nexus-typescript";
 export const devNexusTypeScriptPluginName = "DevNexus TypeScript";
 export const devNexusTypeScriptPluginVersion = "0.1.0-alpha.0";
 
-export function devNexusTypeScriptDevNexusPluginConfig(): NexusProjectPluginConfig {
+export interface DevNexusTypeScriptDevNexusPluginConfigOptions {
+  setupInventory?: TypeScriptProjectSetupInventory;
+  targetAgents?: string[];
+  targetComponents?: string[];
+}
+
+export function devNexusTypeScriptDevNexusPluginConfig(
+  options: DevNexusTypeScriptDevNexusPluginConfigOptions = {},
+): NexusProjectPluginConfig {
   return {
     id: devNexusTypeScriptPluginId,
     name: devNexusTypeScriptPluginName,
@@ -48,6 +58,13 @@ export function devNexusTypeScriptDevNexusPluginConfig(): NexusProjectPluginConf
         targetAgents: ["codex", "claude"],
         provenance: "DevNexus TypeScript plugin",
       },
+      ...(options.setupInventory
+        ? typeScriptProjectSetupWorkerFragmentCapabilities({
+            inventory: options.setupInventory,
+            targetAgents: options.targetAgents,
+            targetComponents: options.targetComponents,
+          })
+        : []),
     ],
   };
 }

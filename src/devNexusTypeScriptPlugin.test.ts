@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   projectPluginCapabilityProjections,
   projectPluginDependencyProjections,
+  projectPluginWorkerFragments,
 } from "dev-nexus";
 import {
   devNexusTypeScriptDevNexusPluginConfig,
@@ -9,6 +10,7 @@ import {
   devNexusTypeScriptPluginName,
   devNexusTypeScriptPluginVersion,
 } from "./devNexusTypeScriptPlugin.js";
+import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupInventory.js";
 
 type DevNexusTypeScriptCapability =
   ReturnType<typeof devNexusTypeScriptDevNexusPluginConfig>["capabilities"][number];
@@ -20,6 +22,75 @@ function capabilitiesOfKind<K extends DevNexusTypeScriptCapability["kind"]>(
     (capability): capability is Extract<DevNexusTypeScriptCapability, { kind: K }> =>
       capability.kind === kind,
   );
+}
+
+function minimalSetupInventory(): TypeScriptProjectSetupInventory {
+  return {
+    projectRoot: "/project",
+    packageManager: {
+      detected: "npm",
+      lockfiles: ["package-lock.json"],
+      packageJsonExists: true,
+    },
+    scripts: {
+      available: ["check"],
+      expected: {
+        build: false,
+        check: true,
+        lint: false,
+        test: false,
+        typecheck: false,
+      },
+    },
+    dependencies: {
+      nodeModules: {
+        path: "/project/node_modules",
+        exists: true,
+        projected: true,
+      },
+      binaries: [
+        { name: "eslint", available: false },
+        { name: "tsc", available: true },
+        { name: "vitest", available: false },
+      ],
+      packages: {
+        typescript: {
+          declaredRange: "^5.9.0",
+          installedVersion: "5.9.1",
+        },
+      },
+    },
+    typescript: {
+      declaredRange: "^5.9.0",
+      installedVersion: "5.9.1",
+      tsconfigPaths: ["tsconfig.json"],
+      projectReferences: {
+        used: false,
+        count: 0,
+      },
+    },
+    tools: {
+      testFramework: {
+        detected: null,
+      },
+      typedLinting: {
+        detected: false,
+        configFiles: [],
+      },
+      structuralSearch: {
+        detected: false,
+        tools: [],
+        configFiles: [],
+      },
+      unusedCode: {
+        detected: false,
+        tools: [],
+        configFiles: [],
+      },
+    },
+    blockers: [],
+    recommendations: [],
+  };
 }
 
 describe("DevNexus TypeScript plugin", () => {
@@ -129,5 +200,43 @@ describe("DevNexus TypeScript plugin", () => {
       "worker_context_fragment",
       "worker_briefing_fragment",
     ]);
+  });
+
+  it("can project setup inventory facts into DevNexus worker fragments", () => {
+    const config = devNexusTypeScriptDevNexusPluginConfig({
+      setupInventory: minimalSetupInventory(),
+      targetComponents: ["typescript"],
+    });
+
+    expect(config.capabilities.map((capability) => capability.id)).toEqual([
+      "node-modules",
+      "context-typescript-toolchain-boundary",
+      "briefing-typescript-worktree-setup",
+      "context-typescript-setup-inventory",
+      "briefing-typescript-setup-inventory",
+    ]);
+
+    const projected = projectPluginWorkerFragments(
+      {
+        plugins: [config],
+      },
+      {
+        agent: "codex",
+        componentId: "typescript",
+      },
+    );
+
+    expect(projected.context.map((fragment) => fragment.id)).toEqual([
+      "context-typescript-setup-inventory",
+      "context-typescript-toolchain-boundary",
+    ]);
+    expect(projected.briefing.map((fragment) => fragment.id)).toEqual([
+      "briefing-typescript-setup-inventory",
+      "briefing-typescript-worktree-setup",
+    ]);
+    expect(projected.context[0]!.body).toContain("Package manager: npm");
+    expect(projected.briefing[0]!.body).toContain(
+      "Use focused verification: npm run check",
+    );
   });
 });
