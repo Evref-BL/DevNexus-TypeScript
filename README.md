@@ -4,10 +4,11 @@ DevNexus TypeScript is the TypeScript and JavaScript tooling plugin for
 DevNexus-managed projects. It contributes setup and worker guidance through the
 generic DevNexus plugin capability contract.
 
-The initial plugin capability projects an existing `node_modules` directory into
-prepared worker worktrees as support-only state. DevNexus remains responsible
-for generic worktree preparation and setup materialization; this plugin owns the
-TypeScript and JavaScript toolchain policy.
+The plugin projects package dependency context, TypeScript workflow skills,
+worker guidance, and a read-only MCP server for TypeScript-aware analysis.
+DevNexus remains responsible for generic worktree preparation and setup
+materialization; this plugin owns the TypeScript and JavaScript toolchain
+policy.
 
 ```ts
 import { devNexusTypeScriptDevNexusPluginConfig } from "@evref-bl/dev-nexus-typescript";
@@ -83,7 +84,14 @@ choose implementation work or repair missing dependencies.
 ## MCP Diagnostics Tracer
 
 DevNexus TypeScript exposes a narrow read-only tracer for TypeScript-aware MCP
-experiments:
+experiments. The package includes the MCP entrypoint advertised by the plugin
+capability:
+
+```sh
+dev-nexus-typescript mcp-stdio
+```
+
+The same operations are exported for direct library use:
 
 ```ts
 import {

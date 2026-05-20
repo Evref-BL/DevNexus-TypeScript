@@ -10,6 +10,10 @@ import {
   devNexusTypeScriptPluginName,
   devNexusTypeScriptPluginVersion,
 } from "./devNexusTypeScriptPlugin.js";
+import {
+  devNexusTypeScriptMcpArgs,
+  devNexusTypeScriptMcpCommand,
+} from "./typeScriptMcpServerConfig.js";
 import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupInventory.js";
 
 type DevNexusTypeScriptCapability =
@@ -164,7 +168,7 @@ describe("DevNexus TypeScript plugin", () => {
         pluginSource: {
           pluginId: "dev-nexus-typescript",
           pluginName: "DevNexus TypeScript",
-          version: "0.1.0-alpha.0",
+          version: devNexusTypeScriptPluginVersion,
           capabilityId: "node-modules",
         },
       },
@@ -237,6 +241,8 @@ describe("DevNexus TypeScript plugin", () => {
         description:
           "Advertise read-only TypeScript project status and diagnostics tracer operations.",
         serverName: "dev-nexus-typescript",
+        command: devNexusTypeScriptMcpCommand,
+        args: [...devNexusTypeScriptMcpArgs],
         tools: [
           {
             name: "typescript.projectStatus",
@@ -256,6 +262,8 @@ describe("DevNexus TypeScript plugin", () => {
         description:
           "Advertise read-only TypeScript import graph analysis operations.",
         serverName: "dev-nexus-typescript",
+        command: devNexusTypeScriptMcpCommand,
+        args: [...devNexusTypeScriptMcpArgs],
         tools: [
           {
             name: "typescript.importGraph",
@@ -270,6 +278,8 @@ describe("DevNexus TypeScript plugin", () => {
         description:
           "Advertise read-only TypeScript bulk rewrite planning operations.",
         serverName: "dev-nexus-typescript",
+        command: devNexusTypeScriptMcpCommand,
+        args: [...devNexusTypeScriptMcpArgs],
         tools: [
           {
             name: "typescript.bulkRewritePlan",
@@ -366,7 +376,7 @@ describe("DevNexus TypeScript plugin", () => {
       {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
-        version: "0.1.0-alpha.0",
+        version: devNexusTypeScriptPluginVersion,
         capabilityCount: 11,
       },
     ]);
@@ -429,5 +439,11 @@ describe("DevNexus TypeScript plugin", () => {
     expect(projected.briefing[0]!.body).toContain(
       "Use focused verification: npm run check",
     );
+    expect(
+      projectPluginDependencyProjections(
+        { plugins: [config] },
+        { componentId: "other" },
+      ),
+    ).toEqual([]);
   });
 });

@@ -1,10 +1,13 @@
 {
   "name": "@evref-bl/dev-nexus-typescript",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "private": false,
   "description": "TypeScript and JavaScript tooling plugin for DevNexus worktrees.",
   "license": "Apache-2.0",
   "type": "module",
+  "bin": {
+    "dev-nexus-typescript": "dist/cli.js"
+  },
   "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js"

@@ -2,6 +2,11 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import type { NexusPluginMcpServerCapability } from "dev-nexus";
 import {
+  devNexusTypeScriptMcpArgs,
+  devNexusTypeScriptMcpCommand,
+  devNexusTypeScriptMcpServerName,
+} from "./typeScriptMcpServerConfig.js";
+import {
   inspectTypeScriptProjectSetup,
   type InspectTypeScriptProjectSetupInput,
   type TypeScriptProjectSetupInventory,
@@ -168,12 +173,14 @@ export function devNexusTypeScriptBulkRewritePlanningCapability(): NexusPluginMc
     id: "mcp-typescript-bulk-rewrite-planning",
     description:
       "Advertise read-only TypeScript bulk rewrite planning operations.",
-    serverName: "dev-nexus-typescript",
+    serverName: devNexusTypeScriptMcpServerName,
+    command: devNexusTypeScriptMcpCommand,
+    args: [...devNexusTypeScriptMcpArgs],
     tools: typeScriptBulkRewritePlanningToolDescriptors.map((tool) => ({
       name: tool.name,
       description: tool.description,
     })),
-  };
+  } as NexusPluginMcpServerCapability;
 }
 
 export function planTypeScriptBulkRewrite(

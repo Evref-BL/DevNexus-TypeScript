@@ -2,6 +2,11 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import type { NexusPluginMcpServerCapability } from "dev-nexus";
 import {
+  devNexusTypeScriptMcpArgs,
+  devNexusTypeScriptMcpCommand,
+  devNexusTypeScriptMcpServerName,
+} from "./typeScriptMcpServerConfig.js";
+import {
   inspectTypeScriptProjectSetup,
   type InspectTypeScriptProjectSetupInput,
   type TypeScriptProjectSetupInventory,
@@ -166,12 +171,14 @@ export function devNexusTypeScriptImportGraphAnalysisCapability(): NexusPluginMc
     id: "mcp-typescript-import-graph-analysis",
     description:
       "Advertise read-only TypeScript import graph analysis operations.",
-    serverName: "dev-nexus-typescript",
+    serverName: devNexusTypeScriptMcpServerName,
+    command: devNexusTypeScriptMcpCommand,
+    args: [...devNexusTypeScriptMcpArgs],
     tools: typeScriptImportGraphToolDescriptors.map((tool) => ({
       name: tool.name,
       description: tool.description,
     })),
-  };
+  } as NexusPluginMcpServerCapability;
 }
 
 export function analyzeTypeScriptImportGraph(
