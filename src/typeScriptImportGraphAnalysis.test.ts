@@ -220,4 +220,48 @@ describe("TypeScript import graph analysis", () => {
     ]);
     expect(graph.hubs.map((hub) => hub.filePath)).toEqual(["src/index.ts", "src/real.ts"]);
   });
+
+  it("classifies Node built-ins as external imports", () => {
+    const projectRoot = makeTempProject("node-builtins");
+    writeTypeScriptProject(projectRoot, {
+      "src/index.ts": [
+        "import fs from 'node:fs';",
+        "import path from 'path';",
+        "export { readFile } from 'node:fs/promises';",
+        "export const modules = [fs, path];",
+        "",
+      ].join("\n"),
+    });
+
+    const graph = analyzeTypeScriptImportGraph({
+      projectRoot,
+      include: ["src/**/*.ts"],
+    });
+
+    expect(graph.status).toBe("ok");
+    expect(graph.summary).toMatchObject({
+      moduleCount: 1,
+      edgeCount: 0,
+      unresolvedImportCount: 0,
+      externalImportCount: 3,
+    });
+    expect(graph.unresolvedImports).toEqual([]);
+    expect(graph.externalImports).toEqual([
+      {
+        from: "src/index.ts",
+        specifier: "node:fs",
+        kind: "import",
+      },
+      {
+        from: "src/index.ts",
+        specifier: "node:fs/promises",
+        kind: "export",
+      },
+      {
+        from: "src/index.ts",
+        specifier: "path",
+        kind: "import",
+      },
+    ]);
+  });
 });

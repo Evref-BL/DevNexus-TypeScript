@@ -1,4 +1,4 @@
-import { createRequire } from "node:module";
+import { builtinModules, createRequire } from "node:module";
 import path from "node:path";
 import type { NexusPluginMcpServerCapability } from "dev-nexus";
 import {
@@ -24,6 +24,11 @@ const defaultIncludePatterns = [
   "src/**/*.mts",
   "src/**/*.cts",
 ];
+
+const nodeBuiltinSpecifiers = new Set([
+  ...builtinModules,
+  ...builtinModules.map((moduleName) => `node:${moduleName}`),
+]);
 
 export const typeScriptImportGraphToolDescriptors = [
   {
@@ -466,6 +471,14 @@ function buildImportGraph(input: {
         moduleResolutionCache,
       });
       if (!resolved) {
+        if (isNodeBuiltinSpecifier(reference.specifier)) {
+          externalImports.push({
+            from: reference.from,
+            specifier: reference.specifier,
+            kind: reference.kind,
+          });
+          continue;
+        }
         unresolvedImports.push({
           from: reference.from,
           specifier: reference.specifier,
@@ -604,6 +617,10 @@ function resolveImportReference(input: {
       input.moduleResolutionCache,
     ).resolvedModule ?? null
   );
+}
+
+function isNodeBuiltinSpecifier(specifier: string): boolean {
+  return nodeBuiltinSpecifiers.has(specifier);
 }
 
 function graphModules(
