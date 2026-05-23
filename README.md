@@ -96,7 +96,9 @@ The same operations are exported for direct library use:
 ```ts
 import {
   analyzeTypeScriptImportGraph,
+  compareTypeScriptQualitySnapshots,
   planTypeScriptBulkRewrite,
+  readTypeScriptQualitySnapshot,
   traceTypeScriptDiagnostics,
   traceTypeScriptProjectStatus,
 } from "@evref-bl/dev-nexus-typescript";
@@ -115,6 +117,18 @@ const rewritePlan = planTypeScriptBulkRewrite({
     from: "oldName",
     to: "newName",
   },
+});
+const before = readTypeScriptQualitySnapshot({
+  projectRoot,
+  sonarIssuesPath: ".quality/sonar/issues.json",
+  sonarQualityGatePath: ".quality/sonar/quality-gate.json",
+  sonarSecurityHotspotsPath: ".quality/sonar/security-hotspots.json",
+});
+const after = readTypeScriptQualitySnapshot({ projectRoot });
+const delta = compareTypeScriptQualitySnapshots({
+  before,
+  after,
+  touchedFiles: ["src/index.ts"],
 });
 ```
 
@@ -138,6 +152,16 @@ matches and returns matched files, matched nodes, proposed edit previews, rewrit
 categories, risks, and verification commands. Current policy records
 `applyAllowed: false`; agents can cite the plan before manual edits or future
 human-approved apply workflows, but this package does not write files.
+
+The quality snapshot operation combines TypeScript diagnostics, import cycles,
+and optional Sonar JSON exports from `api/issues/search`,
+`api/qualitygates/project_status`, and `api/hotspots/search`. Findings are
+grouped by file, rule, and severity. The quality delta operation compares two
+snapshots and highlights new or resolved findings on touched files, with special
+attention to new bugs, vulnerabilities, security hotspots, and critical or
+blocker findings. Rule playbooks cover `typescript:S3776`, `typescript:S5852`,
+and `typescript:S4036`; their references point to SonarSource guidance on
+cognitive complexity, regex backtracking, quality gates, and PATH trust review.
 
 ## Boundaries
 

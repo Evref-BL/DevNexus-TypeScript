@@ -5,5 +5,6 @@ export * from "./typeScriptMcpDiagnosticsTracer.js";
 export * from "./typeScriptMcpServer.js";
 export * from "./typeScriptMcpServerConfig.js";
 export * from "./typeScriptProjectSetupInventory.js";
+export * from "./typeScriptQualityFeedback.js";
 export * from "./typeScriptWorkerGuidance.js";
 export * from "./typeScriptWorkflowSkills.js";
