@@ -10,6 +10,7 @@ import type {
 export const devNexusTypeScriptWorkflowSkillIds = [
   "typescript-diagnose",
   "typescript-refactor",
+  "typescript-project-topology",
   "typescript-test-hygiene",
   "typescript-api-boundaries",
   "typescript-codemod-planning",
@@ -26,6 +27,8 @@ const projectedSkillDescriptions: Record<
     "Project the TypeScript compiler/runtime diagnosis workflow skill.",
   "typescript-refactor":
     "Project the bounded TypeScript refactoring workflow skill.",
+  "typescript-project-topology":
+    "Project the TypeScript project directory topology workflow skill.",
   "typescript-test-hygiene": "Project the TypeScript test hygiene workflow skill.",
   "typescript-api-boundaries":
     "Project the TypeScript API boundary review workflow skill.",

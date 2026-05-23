@@ -9,6 +9,7 @@ describe("DevNexus TypeScript workflow skills", () => {
     expect(devNexusTypeScriptWorkflowSkillIds).toEqual([
       "typescript-diagnose",
       "typescript-refactor",
+      "typescript-project-topology",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -19,6 +20,7 @@ describe("DevNexus TypeScript workflow skills", () => {
     expect(definitions.map((definition) => definition.manifest.id)).toEqual([
       "typescript-diagnose",
       "typescript-refactor",
+      "typescript-project-topology",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -47,5 +49,15 @@ describe("DevNexus TypeScript workflow skills", () => {
         `"id": "${definition.manifest.id}"`,
       );
     }
+    expect(
+      definitions.find(
+        (definition) => definition.manifest.id === "typescript-project-topology",
+      )!.files["SKILL.md"],
+    ).toContain("prefer a central `test` tree that mirrors");
+    expect(
+      definitions.find(
+        (definition) => definition.manifest.id === "typescript-project-topology",
+      )!.files["REFERENCES.md"],
+    ).toContain("https://www.typescriptlang.org/tsconfig/rootDir.html");
   });
 });
