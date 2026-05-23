@@ -17,6 +17,12 @@ import {
   type TypeScriptMcpTraceInput,
 } from "./typeScriptMcpDiagnosticsTracer.js";
 import { devNexusTypeScriptMcpServerName } from "./typeScriptMcpServerConfig.js";
+import {
+  compareTypeScriptQualitySnapshots,
+  readTypeScriptQualitySnapshot,
+  type TypeScriptQualityDeltaInput,
+  type TypeScriptQualitySnapshotInput,
+} from "./typeScriptQualityFeedback.js";
 
 type JsonRpcId = string | number | null;
 
@@ -114,6 +120,70 @@ export const devNexusTypeScriptMcpTools: readonly McpTool[] = [
       additionalProperties: true,
     },
   },
+  {
+    name: "typescript.qualitySnapshot",
+    description:
+      "Read TypeScript diagnostics, import cycles, and Sonar JSON into one quality snapshot.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        projectRoot: projectRootProperty,
+        tsconfigPath: tsconfigPathProperty,
+        include: {
+          type: "array",
+          items: { type: "string" },
+        },
+        ignore: {
+          type: "array",
+          items: { type: "string" },
+        },
+        sonarIssuesPath: {
+          type: "string",
+          description: "Optional project-relative Sonar api/issues/search JSON path.",
+        },
+        sonarQualityGatePath: {
+          type: "string",
+          description:
+            "Optional project-relative Sonar api/qualitygates/project_status JSON path.",
+        },
+        sonarSecurityHotspotsPath: {
+          type: "string",
+          description:
+            "Optional project-relative Sonar api/hotspots/search JSON path.",
+        },
+        sonar: {
+          type: "object",
+          description: "Optional inline Sonar JSON objects for tests or callers.",
+        },
+      },
+      required: ["projectRoot"],
+      additionalProperties: true,
+    },
+  },
+  {
+    name: "typescript.qualityDelta",
+    description:
+      "Compare two TypeScript quality snapshots and highlight touched-file regressions.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        before: {
+          type: "object",
+          description: "Baseline quality snapshot.",
+        },
+        after: {
+          type: "object",
+          description: "Current quality snapshot.",
+        },
+        touchedFiles: {
+          type: "array",
+          items: { type: "string" },
+        },
+      },
+      required: ["before", "after"],
+      additionalProperties: true,
+    },
+  },
 ];
 
 export async function handleDevNexusTypeScriptMcpJsonRpcMessage(
@@ -183,6 +253,18 @@ async function callDevNexusTypeScriptMcpTool(
         return toolResult(
           planTypeScriptBulkRewrite(
             params.arguments as unknown as TypeScriptBulkRewritePlanInput,
+          ),
+        );
+      case "typescript.qualitySnapshot":
+        return toolResult(
+          readTypeScriptQualitySnapshot(
+            params.arguments as unknown as TypeScriptQualitySnapshotInput,
+          ),
+        );
+      case "typescript.qualityDelta":
+        return toolResult(
+          compareTypeScriptQualitySnapshots(
+            params.arguments as unknown as TypeScriptQualityDeltaInput,
           ),
         );
       default:
