@@ -111,6 +111,7 @@ describe("DevNexus TypeScript plugin", () => {
       "node-modules",
       "skill-typescript-diagnose",
       "skill-typescript-refactor",
+      "skill-typescript-project-topology",
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",
@@ -194,6 +195,13 @@ describe("DevNexus TypeScript plugin", () => {
       },
       {
         kind: "projected_skill",
+        id: "skill-typescript-project-topology",
+        description: "Project the TypeScript project directory topology workflow skill.",
+        skillId: "typescript-project-topology",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
         id: "skill-typescript-test-hygiene",
         description: "Project the TypeScript test hygiene workflow skill.",
         skillId: "typescript-test-hygiene",
@@ -227,6 +235,7 @@ describe("DevNexus TypeScript plugin", () => {
     ).toEqual([
       "typescript-diagnose",
       "typescript-refactor",
+      "typescript-project-topology",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -377,11 +386,12 @@ describe("DevNexus TypeScript plugin", () => {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
         version: devNexusTypeScriptPluginVersion,
-        capabilityCount: 11,
+        capabilityCount: 12,
       },
     ]);
     expect(projected[0]!.capabilities.map((capability) => capability.kind)).toEqual([
       "dependency_projection",
+      "projected_skill",
       "projected_skill",
       "projected_skill",
       "projected_skill",
@@ -405,6 +415,7 @@ describe("DevNexus TypeScript plugin", () => {
       "node-modules",
       "skill-typescript-diagnose",
       "skill-typescript-refactor",
+      "skill-typescript-project-topology",
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",

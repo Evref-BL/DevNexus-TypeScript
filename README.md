@@ -24,10 +24,10 @@ running package installs.
 ## Workflow Skills
 
 DevNexus TypeScript ships baseline workflow skills for TypeScript diagnosis,
-bounded refactoring, test hygiene, API boundary review, and dry-run codemod
-planning. The plugin config declares them as `projected_skill` capabilities, and
-the package also exports DevNexus skill definitions for projects that
-materialize package-owned skills:
+bounded refactoring, project topology, test hygiene, API boundary review, and
+dry-run codemod planning. The plugin config declares them as `projected_skill`
+capabilities, and the package also exports DevNexus skill definitions for
+projects that materialize package-owned skills:
 
 ```ts
 import {

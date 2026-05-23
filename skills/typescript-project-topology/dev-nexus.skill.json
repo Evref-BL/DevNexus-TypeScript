@@ -1,0 +1,14 @@
+{
+  "id": "typescript-project-topology",
+  "name": "typescript-project-topology",
+  "description": "TypeScript project topology workflow for separating source, tests, build output, package files, and domain folders without changing behavior. Use when Codex must audit, design, or adjust TypeScript repository layout, especially src/test structure, package publish boundaries, or module grouping.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-project-topology"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}
