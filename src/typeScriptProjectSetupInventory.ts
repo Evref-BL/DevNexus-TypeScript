@@ -55,6 +55,15 @@ export interface TypeScriptProjectSetupInventory {
       configFiles: string[];
     };
   };
+  quality: {
+    scripts: string[];
+    sonar: {
+      configFiles: string[];
+      ciWorkflowFiles: string[];
+    };
+    ignoredRuntimePaths: string[];
+    missingIgnoredRuntimePaths: string[];
+  };
   blockers: TypeScriptSetupFinding[];
   recommendations: string[];
 }
@@ -115,6 +124,8 @@ const lockfilePackageManagers = [
   "yarn.lock",
 ];
 
+const qualityRuntimeIgnorePaths = [".scannerwork/", ".quality/"];
+
 export function inspectTypeScriptProjectSetup(
   input: InspectTypeScriptProjectSetupInput,
 ): TypeScriptProjectSetupInventory {
@@ -135,10 +146,12 @@ export function inspectTypeScriptProjectSetup(
   const tsconfigPaths = findRootTsconfigPaths(projectRoot);
   const projectReferenceCount = countProjectReferences(projectRoot, tsconfigPaths);
   const scriptAvailability = expectedScriptAvailability(scripts);
+  const quality = inspectQualitySetup(projectRoot, scripts);
   const recommendations = buildRecommendations({
     nodeModulesExists,
     scriptAvailability,
     tsconfigPaths,
+    quality,
   });
   const blockers = buildBlockers({
     packageJsonExists,
@@ -188,6 +201,7 @@ export function inspectTypeScriptProjectSetup(
       structuralSearch: detectStructuralSearch(projectRoot, packageJson),
       unusedCode: detectUnusedCode(projectRoot, packageJson),
     },
+    quality,
     blockers,
     recommendations,
   };
@@ -466,6 +480,7 @@ function buildRecommendations(input: {
   nodeModulesExists: boolean;
   scriptAvailability: Record<ExpectedScriptName, boolean>;
   tsconfigPaths: string[];
+  quality: TypeScriptProjectSetupInventory["quality"];
 }): string[] {
   const recommendations: string[] = [];
 
@@ -487,7 +502,102 @@ function buildRecommendations(input: {
     );
   }
 
+  if (
+    qualitySurfaceDetected(input.quality) &&
+    input.quality.missingIgnoredRuntimePaths.length > 0
+  ) {
+    recommendations.push(
+      `Ignore local quality runtime output: ${input.quality.missingIgnoredRuntimePaths.join(", ")}.`,
+    );
+  }
+
   return recommendations;
+}
+
+function inspectQualitySetup(
+  projectRoot: string,
+  scripts: Record<string, string>,
+): TypeScriptProjectSetupInventory["quality"] {
+  const ignoredRuntimePaths = ignoredQualityRuntimePaths(projectRoot);
+
+  return {
+    scripts: qualityScriptNames(scripts),
+    sonar: {
+      configFiles: existingFiles(projectRoot, ["sonar-project.properties"]),
+      ciWorkflowFiles: sonarWorkflowFiles(projectRoot),
+    },
+    ignoredRuntimePaths,
+    missingIgnoredRuntimePaths: qualityRuntimeIgnorePaths.filter(
+      (runtimePath) => !ignoredRuntimePaths.includes(runtimePath),
+    ),
+  };
+}
+
+function qualityScriptNames(scripts: Record<string, string>): string[] {
+  return Object.keys(scripts)
+    .filter((scriptName) => {
+      const normalized = scriptName.toLowerCase();
+      return (
+        normalized === "check" ||
+        normalized === "lint" ||
+        normalized === "typecheck" ||
+        normalized.includes("quality") ||
+        normalized.includes("sonar")
+      );
+    })
+    .sort();
+}
+
+function sonarWorkflowFiles(projectRoot: string): string[] {
+  const workflowRoot = path.join(projectRoot, ".github", "workflows");
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(workflowRoot, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  return entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => path.join(".github", "workflows", entry.name))
+    .filter((filePath) => workflowMentionsSonar(path.join(projectRoot, filePath)))
+    .sort();
+}
+
+function workflowMentionsSonar(filePath: string): boolean {
+  const content = safeReadText(filePath).toLowerCase();
+  return (
+    content.includes("sonarqube") ||
+    content.includes("sonarcloud") ||
+    content.includes("sonarsource/") ||
+    content.includes("sonar-scanner")
+  );
+}
+
+function ignoredQualityRuntimePaths(projectRoot: string): string[] {
+  const ignored = new Set(
+    safeReadText(path.join(projectRoot, ".gitignore"))
+      .split(/\r?\n/u)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith("#")),
+  );
+
+  return qualityRuntimeIgnorePaths.filter((runtimePath) => {
+    const withoutSlash = runtimePath.endsWith("/")
+      ? runtimePath.slice(0, -1)
+      : runtimePath;
+    return ignored.has(runtimePath) || ignored.has(withoutSlash);
+  });
+}
+
+function qualitySurfaceDetected(
+  quality: TypeScriptProjectSetupInventory["quality"],
+): boolean {
+  return (
+    quality.scripts.length > 0 ||
+    quality.sonar.configFiles.length > 0 ||
+    quality.sonar.ciWorkflowFiles.length > 0
+  );
 }
 
 function existingFiles(projectRoot: string, fileNames: string[]): string[] {

@@ -79,6 +79,7 @@ export function typeScriptProjectSetupWorkerContextBody(
     `TypeScript: ${typeScriptSummary(inventory)}.`,
     `Project references: ${inventory.typescript.projectReferences.count}.`,
     `Tools: ${toolSummary(inventory)}.`,
+    `Quality setup: ${qualitySetupSummary(inventory)}.`,
     binarySummary(inventory),
     setupBlockerSummary(inventory.blockers),
     recommendationSummary(inventory.recommendations),
@@ -94,6 +95,7 @@ export function typeScriptProjectSetupWorkerBriefingBody(
     `Dependency projection: ${dependencyProjectionSummary(inventory)}.`,
     `Available package scripts: ${joinOrNone(inventory.scripts.available)}.`,
     `Use focused verification: ${recommendedVerificationSummary(inventory)}.`,
+    `Quality setup: ${qualitySetupSummary(inventory)}.`,
     binarySummary(inventory),
     setupBlockerSummary(inventory.blockers),
     "Do not run package-manager installs or npx package fetches as an automatic repair.",
@@ -175,6 +177,47 @@ function toolSummary(inventory: TypeScriptProjectSetupInventory): string {
   ].filter((tool): tool is string => tool !== null);
 
   return joinOrNone(tools);
+}
+
+function qualitySetupSummary(inventory: TypeScriptProjectSetupInventory): string {
+  const quality = inventory.quality ?? fallbackQualitySetup(inventory);
+  const parts = [
+    `scripts ${joinOrNone(quality.scripts.map((script) => packageScriptCommand(inventory.packageManager.detected, script)))}`,
+    `Sonar config ${joinOrNone(quality.sonar.configFiles)}`,
+    `Sonar CI ${joinOrNone(quality.sonar.ciWorkflowFiles)}`,
+    `ignored runtime output ${joinOrNone(quality.ignoredRuntimePaths)}`,
+  ];
+
+  if (quality.missingIgnoredRuntimePaths.length > 0) {
+    parts.push(
+      `runtime output not ignored ${joinOrNone(quality.missingIgnoredRuntimePaths)}`,
+    );
+  }
+
+  return parts.join("; ");
+}
+
+function fallbackQualitySetup(
+  inventory: TypeScriptProjectSetupInventory,
+): TypeScriptProjectSetupInventory["quality"] {
+  return {
+    scripts: inventory.scripts.available.filter((scriptName) => {
+      const normalized = scriptName.toLowerCase();
+      return (
+        normalized === "check" ||
+        normalized === "lint" ||
+        normalized === "typecheck" ||
+        normalized.includes("quality") ||
+        normalized.includes("sonar")
+      );
+    }),
+    sonar: {
+      configFiles: [],
+      ciWorkflowFiles: [],
+    },
+    ignoredRuntimePaths: [],
+    missingIgnoredRuntimePaths: [],
+  };
 }
 
 function binarySummary(inventory: TypeScriptProjectSetupInventory): string {

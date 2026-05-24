@@ -92,6 +92,15 @@ function minimalSetupInventory(): TypeScriptProjectSetupInventory {
         configFiles: [],
       },
     },
+    quality: {
+      scripts: ["check"],
+      sonar: {
+        configFiles: [],
+        ciWorkflowFiles: [],
+      },
+      ignoredRuntimePaths: [],
+      missingIgnoredRuntimePaths: [],
+    },
     blockers: [],
     recommendations: [],
   };
@@ -507,6 +516,9 @@ describe("DevNexus TypeScript plugin", () => {
     expect(projected.context[0]!.body).toContain("Package manager: npm");
     expect(projected.briefing[0]!.body).toContain(
       "Use focused verification: npm run check",
+    );
+    expect(projected.briefing[0]!.body).toContain(
+      "Quality setup: scripts npm run check",
     );
     expect(
       projectPluginDependencyProjections(
