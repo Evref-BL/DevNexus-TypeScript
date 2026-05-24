@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Quality Feedback"
+  short_description: "Use TypeScript and Sonar quality feedback."
+  default_prompt: "Use TypeScript Quality Feedback to audit touched-file quality and apply the relevant rule playbooks."

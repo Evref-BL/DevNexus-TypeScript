@@ -10,6 +10,7 @@ describe("DevNexus TypeScript workflow skills", () => {
       "typescript-diagnose",
       "typescript-refactor",
       "typescript-project-topology",
+      "typescript-quality-feedback",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -21,6 +22,7 @@ describe("DevNexus TypeScript workflow skills", () => {
       "typescript-diagnose",
       "typescript-refactor",
       "typescript-project-topology",
+      "typescript-quality-feedback",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -59,5 +61,10 @@ describe("DevNexus TypeScript workflow skills", () => {
         (definition) => definition.manifest.id === "typescript-project-topology",
       )!.files["REFERENCES.md"],
     ).toContain("https://www.typescriptlang.org/tsconfig/rootDir.html");
+    expect(
+      definitions.find(
+        (definition) => definition.manifest.id === "typescript-quality-feedback",
+      )!.files["SKILL.md"],
+    ).toContain("typescript:S3776");
   });
 });

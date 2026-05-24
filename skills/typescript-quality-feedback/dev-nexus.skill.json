@@ -1,0 +1,14 @@
+{
+  "id": "typescript-quality-feedback",
+  "name": "typescript-quality-feedback",
+  "description": "TypeScript quality feedback workflow for using diagnostics, import graphs, Sonar JSON snapshots, touched-file deltas, and rule playbooks before and after source changes. Use when Codex must audit or improve TypeScript quality, triage Sonar findings, or avoid introducing new quality regressions.",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "source": {
+    "type": "local",
+    "uri": "@evref-bl/dev-nexus-typescript/skills/typescript-quality-feedback"
+  },
+  "supportedAgents": ["codex", "claude"],
+  "materialization": "copy",
+  "sourceControl": "support"
+}

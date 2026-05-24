@@ -24,10 +24,10 @@ running package installs.
 ## Workflow Skills
 
 DevNexus TypeScript ships baseline workflow skills for TypeScript diagnosis,
-bounded refactoring, project topology, test hygiene, API boundary review, and
-dry-run codemod planning. The plugin config declares them as `projected_skill`
-capabilities, and the package also exports DevNexus skill definitions for
-projects that materialize package-owned skills:
+bounded refactoring, project topology, quality feedback, test hygiene, API
+boundary review, and dry-run codemod planning. The plugin config declares them
+as `projected_skill` capabilities, and the package also exports DevNexus skill
+definitions for projects that materialize package-owned skills:
 
 ```ts
 import {
@@ -162,6 +162,9 @@ attention to new bugs, vulnerabilities, security hotspots, and critical or
 blocker findings. Rule playbooks cover `typescript:S3776`, `typescript:S5852`,
 and `typescript:S4036`; their references point to SonarSource guidance on
 cognitive complexity, regex backtracking, quality gates, and PATH trust review.
+The plugin advertises these operations through its MCP capability list and
+projects the `typescript-quality-feedback` skill so agents know when to use the
+snapshot, delta, and rule playbook workflow.
 
 ## Boundaries
 
