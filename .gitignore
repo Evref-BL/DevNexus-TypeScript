@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .dev-nexus/
+.quality/
+.scannerwork/
 .env
 .env.*
 *.log
