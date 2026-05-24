@@ -59,6 +59,7 @@ describe("typeScriptProjectSetupWorkerFragmentCapabilities", () => {
       scripts: {
         build: "tsc -b",
         check: "npm run typecheck && npm test",
+        "quality:sonar-local": "sonar-scanner",
         test: "vitest run",
         typecheck: "tsc --noEmit",
       },
@@ -71,6 +72,8 @@ describe("typeScriptProjectSetupWorkerFragmentCapabilities", () => {
     writeJson(path.join(projectRoot, "tsconfig.json"), {
       references: [{ path: "./packages/core" }],
     });
+    writeText(path.join(projectRoot, "sonar-project.properties"), "sonar.projectKey=demo\n");
+    writeText(path.join(projectRoot, ".gitignore"), ".quality/\n.scannerwork/\n");
     writeInstalledPackage(projectRoot, "typescript", "5.9.1");
     writeInstalledPackage(projectRoot, "vitest", "4.1.0");
     writeBin(projectRoot, "tsc");
@@ -107,16 +110,24 @@ describe("typeScriptProjectSetupWorkerFragmentCapabilities", () => {
     expect(contextBody).toContain("does not choose or supervise implementation work");
     expect(contextBody).toContain("Package manager: npm");
     expect(contextBody).toContain("Dependency projection: local node_modules present");
-    expect(contextBody).toContain("Available scripts: build, check, test, typecheck");
+    expect(contextBody).toContain(
+      "Available scripts: build, check, quality:sonar-local, test, typecheck",
+    );
     expect(contextBody).toContain(
       "Recommended verification: npm run check, npm run typecheck, npm run test",
     );
     expect(contextBody).toContain("TypeScript: declared ^5.9.0; installed 5.9.1");
     expect(contextBody).toContain("Project references: 1");
+    expect(contextBody).toContain(
+      "Quality setup: scripts npm run check, npm run quality:sonar-local, npm run typecheck; Sonar config sonar-project.properties; Sonar CI none; ignored runtime output .scannerwork/, .quality/",
+    );
     expect(contextBody).toContain("Setup blockers: none");
 
     expect(briefingBody).toContain("Use focused verification: npm run check");
-    expect(briefingBody).toContain("Available package scripts: build, check, test, typecheck");
+    expect(briefingBody).toContain(
+      "Available package scripts: build, check, quality:sonar-local, test, typecheck",
+    );
+    expect(briefingBody).toContain("Quality setup: scripts npm run check");
     expect(briefingBody).toContain("Setup blockers: none");
   });
 

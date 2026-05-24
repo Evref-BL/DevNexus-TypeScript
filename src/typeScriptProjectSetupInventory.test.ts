@@ -59,6 +59,7 @@ describe("inspectTypeScriptProjectSetup", () => {
         test: "vitest run",
         lint: "eslint .",
         typecheck: "tsc --noEmit",
+        "quality:sonar-local": "sonar-scanner",
       },
       devDependencies: {
         "@ast-grep/napi": "^0.36.0",
@@ -83,6 +84,12 @@ describe("inspectTypeScriptProjectSetup", () => {
     );
     writeText(path.join(projectRoot, "sgconfig.yml"), "ruleDirs: [rules]\n");
     writeText(path.join(projectRoot, "knip.json"), "{}\n");
+    writeText(path.join(projectRoot, "sonar-project.properties"), "sonar.projectKey=demo\n");
+    writeText(path.join(projectRoot, ".gitignore"), ".quality/\n.scannerwork/\n");
+    writeText(
+      path.join(projectRoot, ".github", "workflows", "sonar.yml"),
+      "steps:\n  - uses: SonarSource/sonarqube-scan-action@v6\n",
+    );
 
     writeInstalledPackage(projectRoot, "typescript", "5.9.1");
     writeInstalledPackage(projectRoot, "vitest", "4.1.0");
@@ -104,6 +111,7 @@ describe("inspectTypeScriptProjectSetup", () => {
       "build",
       "check",
       "lint",
+      "quality:sonar-local",
       "test",
       "typecheck",
     ]);
@@ -145,6 +153,15 @@ describe("inspectTypeScriptProjectSetup", () => {
       unusedCode: {
         detected: true,
       },
+    });
+    expect(inventory.quality).toEqual({
+      scripts: ["check", "lint", "quality:sonar-local", "typecheck"],
+      sonar: {
+        configFiles: ["sonar-project.properties"],
+        ciWorkflowFiles: [".github/workflows/sonar.yml"],
+      },
+      ignoredRuntimePaths: [".scannerwork/", ".quality/"],
+      missingIgnoredRuntimePaths: [],
     });
     expect(inventory.blockers).toEqual([]);
   });
@@ -218,6 +235,42 @@ describe("inspectTypeScriptProjectSetup", () => {
     );
     expect(inventory.recommendations).toContain(
       "Add a check or typecheck script so agents can verify TypeScript changes consistently.",
+    );
+  });
+
+  it("recommends ignoring local quality runtime output when quality tooling exists", () => {
+    const projectRoot = makeTempProject("quality-runtime");
+    writePackage(projectRoot, {
+      scripts: {
+        "quality:sonar-local": "sonar-scanner",
+      },
+      devDependencies: {
+        typescript: "^5.9.0",
+      },
+    });
+    writeText(path.join(projectRoot, "package-lock.json"), "{}\n");
+    writeJson(path.join(projectRoot, "tsconfig.json"), {
+      compilerOptions: {
+        strict: true,
+      },
+    });
+    writeText(path.join(projectRoot, "sonar-project.properties"), "sonar.projectKey=demo\n");
+    writeInstalledPackage(projectRoot, "typescript", "5.9.1");
+    writeBin(projectRoot, "tsc");
+
+    const inventory = inspectTypeScriptProjectSetup({ projectRoot });
+
+    expect(inventory.quality).toMatchObject({
+      scripts: ["quality:sonar-local"],
+      sonar: {
+        configFiles: ["sonar-project.properties"],
+        ciWorkflowFiles: [],
+      },
+      ignoredRuntimePaths: [],
+      missingIgnoredRuntimePaths: [".scannerwork/", ".quality/"],
+    });
+    expect(inventory.recommendations).toContain(
+      "Ignore local quality runtime output: .scannerwork/, .quality/.",
     );
   });
 });

@@ -57,8 +57,9 @@ const inventory = inspectTypeScriptProjectSetup({ projectRoot });
 The inventory reports package-manager lockfiles, package scripts, dependency
 projection state, TypeScript configuration, project references, test framework
 detection, typed linting detection, structural-search tooling, unused-code
-tooling, blockers, and recommendations. It does not run package-manager
-commands, install dependencies, or mutate the project.
+tooling, quality-related scripts, Sonar config/workflow presence, ignored
+local quality runtime paths, blockers, and recommendations. It does not run
+package-manager commands, install dependencies, or mutate the project.
 
 The same inventory can be exposed to workers through DevNexus worker context and
 briefing fragments:
@@ -78,8 +79,9 @@ const plugin = devNexusTypeScriptDevNexusPluginConfig({
 
 These generated fragments summarize available package scripts, recommended
 focused verification commands, dependency projection state, missing binaries,
-and setup blockers. Blockers remain advisory setup facts; the plugin does not
-choose implementation work or repair missing dependencies.
+quality setup, missing binaries, and setup blockers. Blockers remain advisory
+setup facts; the plugin does not choose implementation work or repair missing
+dependencies.
 
 ## MCP Diagnostics Tracer
 
