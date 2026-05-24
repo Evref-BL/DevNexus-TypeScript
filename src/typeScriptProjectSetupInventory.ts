@@ -559,8 +559,10 @@ function sonarWorkflowFiles(projectRoot: string): string[] {
 
   return entries
     .filter((entry) => entry.isFile())
-    .map((entry) => path.join(".github", "workflows", entry.name))
-    .filter((filePath) => workflowMentionsSonar(path.join(projectRoot, filePath)))
+    .map((entry) => path.posix.join(".github", "workflows", entry.name))
+    .filter((filePath) =>
+      workflowMentionsSonar(path.join(projectRoot, ...filePath.split("/"))),
+    )
     .sort();
 }
 
