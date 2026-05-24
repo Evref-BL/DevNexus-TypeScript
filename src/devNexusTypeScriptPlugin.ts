@@ -3,6 +3,7 @@ import type { TypeScriptProjectSetupInventory } from "./typeScriptProjectSetupIn
 import { devNexusTypeScriptBulkRewritePlanningCapability } from "./typeScriptBulkRewritePlanning.js";
 import { devNexusTypeScriptImportGraphAnalysisCapability } from "./typeScriptImportGraphAnalysis.js";
 import { devNexusTypeScriptMcpDiagnosticsTracerCapability } from "./typeScriptMcpDiagnosticsTracer.js";
+import { devNexusTypeScriptQualityFeedbackCapability } from "./typeScriptQualityFeedback.js";
 import { typeScriptProjectSetupWorkerFragmentCapabilities } from "./typeScriptWorkerGuidance.js";
 import { devNexusTypeScriptProjectedSkillCapabilities } from "./typeScriptWorkflowSkills.js";
 
@@ -44,6 +45,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
       devNexusTypeScriptMcpDiagnosticsTracerCapability(),
       devNexusTypeScriptImportGraphAnalysisCapability(),
       devNexusTypeScriptBulkRewritePlanningCapability(),
+      devNexusTypeScriptQualityFeedbackCapability(),
       {
         kind: "worker_context_fragment",
         id: "context-typescript-toolchain-boundary",
@@ -52,6 +54,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
           "DevNexus TypeScript composes with DevNexus and does not choose or supervise implementation work.",
           "It contributes TypeScript and JavaScript setup policy through DevNexus plugin capabilities.",
           "Use projected dependencies when available, and report missing dependency context as a setup blocker instead of silently fetching packages.",
+          "For quality work, use read-only TypeScript diagnostics, import graph, quality snapshot, and quality delta tools before changing source.",
         ].join(" "),
         targetAgents: ["codex", "claude"],
         ...targetComponents,
@@ -66,6 +69,7 @@ export function devNexusTypeScriptDevNexusPluginConfig(
           "Prefer existing package scripts such as test, check, typecheck, lint, or build.",
           "Do not run npm, pnpm, yarn, or bun install commands unless the project policy or user explicitly allows dependency installation.",
           "If package binaries are unavailable, report the setup blocker instead of using npx package fetches as a substitute.",
+          "When touching quality findings, compare before/after quality snapshots for touched files and call out new bugs, vulnerabilities, security hotspots, and critical/blocker findings.",
         ].join(" "),
         targetAgents: ["codex", "claude"],
         ...targetComponents,

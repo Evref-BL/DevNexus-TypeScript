@@ -112,12 +112,14 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-diagnose",
       "skill-typescript-refactor",
       "skill-typescript-project-topology",
+      "skill-typescript-quality-feedback",
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",
       "mcp-typescript-diagnostics-tracer",
       "mcp-typescript-import-graph-analysis",
       "mcp-typescript-bulk-rewrite-planning",
+      "mcp-typescript-quality-feedback",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
     ]);
@@ -202,6 +204,14 @@ describe("DevNexus TypeScript plugin", () => {
       },
       {
         kind: "projected_skill",
+        id: "skill-typescript-quality-feedback",
+        description:
+          "Project the TypeScript quality feedback and Sonar rule playbook skill.",
+        skillId: "typescript-quality-feedback",
+        targetAgents: ["codex", "claude"],
+      },
+      {
+        kind: "projected_skill",
         id: "skill-typescript-test-hygiene",
         description: "Project the TypeScript test hygiene workflow skill.",
         skillId: "typescript-test-hygiene",
@@ -236,6 +246,7 @@ describe("DevNexus TypeScript plugin", () => {
       "typescript-diagnose",
       "typescript-refactor",
       "typescript-project-topology",
+      "typescript-quality-feedback",
       "typescript-test-hygiene",
       "typescript-api-boundaries",
       "typescript-codemod-planning",
@@ -297,6 +308,27 @@ describe("DevNexus TypeScript plugin", () => {
           },
         ],
       },
+      {
+        kind: "mcp_server",
+        id: "mcp-typescript-quality-feedback",
+        description:
+          "Advertise read-only TypeScript quality snapshot and delta operations.",
+        serverName: "dev-nexus-typescript",
+        command: devNexusTypeScriptMcpCommand,
+        args: [...devNexusTypeScriptMcpArgs],
+        tools: [
+          {
+            name: "typescript.qualitySnapshot",
+            description:
+              "Read TypeScript diagnostics, import cycles, and Sonar JSON into one quality snapshot.",
+          },
+          {
+            name: "typescript.qualityDelta",
+            description:
+              "Compare two TypeScript quality snapshots and highlight touched-file regressions.",
+          },
+        ],
+      },
     ]);
 
     const projected = projectPluginCapabilityProjections({
@@ -353,6 +385,26 @@ describe("DevNexus TypeScript plugin", () => {
         },
       ],
     });
+    expect(
+      projected[0]!.capabilities.find(
+        (capability) => capability.id === "mcp-typescript-quality-feedback",
+      ),
+    ).toMatchObject({
+      kind: "mcp_server",
+      serverName: "dev-nexus-typescript",
+      tools: [
+        {
+          name: "typescript.qualitySnapshot",
+          description:
+            "Read TypeScript diagnostics, import cycles, and Sonar JSON into one quality snapshot.",
+        },
+        {
+          name: "typescript.qualityDelta",
+          description:
+            "Compare two TypeScript quality snapshots and highlight touched-file regressions.",
+        },
+      ],
+    });
   });
 
   it("provides worker guidance without package-manager mutation", () => {
@@ -366,6 +418,7 @@ describe("DevNexus TypeScript plugin", () => {
     expect(contextFragment.body).toContain("does not choose or supervise");
     expect(contextFragment.body).toContain("report missing dependency context");
     expect(contextFragment.body).toContain("instead of silently fetching packages");
+    expect(contextFragment.body).toContain("quality snapshot");
 
     expect(briefingFragment).toMatchObject({
       id: "briefing-typescript-worktree-setup",
@@ -374,6 +427,7 @@ describe("DevNexus TypeScript plugin", () => {
     expect(briefingFragment.body).toContain("Prefer existing package scripts");
     expect(briefingFragment.body).toContain("Do not run npm, pnpm, yarn, or bun install");
     expect(briefingFragment.body).toContain("instead of using npx package fetches");
+    expect(briefingFragment.body).toContain("critical/blocker findings");
   });
 
   it("exposes plugin capabilities through DevNexus projection helpers", () => {
@@ -386,7 +440,7 @@ describe("DevNexus TypeScript plugin", () => {
         pluginId: "dev-nexus-typescript",
         pluginName: "DevNexus TypeScript",
         version: devNexusTypeScriptPluginVersion,
-        capabilityCount: 12,
+        capabilityCount: 14,
       },
     ]);
     expect(projected[0]!.capabilities.map((capability) => capability.kind)).toEqual([
@@ -397,6 +451,8 @@ describe("DevNexus TypeScript plugin", () => {
       "projected_skill",
       "projected_skill",
       "projected_skill",
+      "projected_skill",
+      "mcp_server",
       "mcp_server",
       "mcp_server",
       "mcp_server",
@@ -416,12 +472,14 @@ describe("DevNexus TypeScript plugin", () => {
       "skill-typescript-diagnose",
       "skill-typescript-refactor",
       "skill-typescript-project-topology",
+      "skill-typescript-quality-feedback",
       "skill-typescript-test-hygiene",
       "skill-typescript-api-boundaries",
       "skill-typescript-codemod-planning",
       "mcp-typescript-diagnostics-tracer",
       "mcp-typescript-import-graph-analysis",
       "mcp-typescript-bulk-rewrite-planning",
+      "mcp-typescript-quality-feedback",
       "context-typescript-toolchain-boundary",
       "briefing-typescript-worktree-setup",
       "context-typescript-setup-inventory",

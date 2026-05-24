@@ -1,10 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { NexusPluginMcpServerCapability } from "dev-nexus";
 import { analyzeTypeScriptImportGraph } from "./typeScriptImportGraphAnalysis.js";
 import {
   traceTypeScriptDiagnostics,
   type TypeScriptMcpTraceInput,
 } from "./typeScriptMcpDiagnosticsTracer.js";
+import {
+  devNexusTypeScriptMcpArgs,
+  devNexusTypeScriptMcpCommand,
+  devNexusTypeScriptMcpServerName,
+} from "./typeScriptMcpServerConfig.js";
 import type { TypeScriptImportGraphInput } from "./typeScriptImportGraphAnalysis.js";
 import type { TypeScriptSetupFinding } from "./typeScriptProjectSetupInventory.js";
 
@@ -273,6 +279,22 @@ export function createTypeScriptQualityAnalyzer(): TypeScriptQualityAnalyzer {
     qualitySnapshot: readTypeScriptQualitySnapshot,
     qualityDelta: compareTypeScriptQualitySnapshots,
   };
+}
+
+export function devNexusTypeScriptQualityFeedbackCapability(): NexusPluginMcpServerCapability {
+  return {
+    kind: "mcp_server",
+    id: "mcp-typescript-quality-feedback",
+    description:
+      "Advertise read-only TypeScript quality snapshot and delta operations.",
+    serverName: devNexusTypeScriptMcpServerName,
+    command: devNexusTypeScriptMcpCommand,
+    args: [...devNexusTypeScriptMcpArgs],
+    tools: typeScriptQualityFeedbackToolDescriptors.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+    })),
+  } as NexusPluginMcpServerCapability;
 }
 
 export function readTypeScriptQualitySnapshot(
