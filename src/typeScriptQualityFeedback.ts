@@ -148,6 +148,7 @@ export interface TypeScriptQualityDeltaInput {
 
 export interface TypeScriptQualityDelta {
   operation: "typescript.qualityDelta";
+  producer: "typescript.qualityDelta";
   readOnly: true;
   status: "regressed" | "improved" | "unchanged";
   touchedFiles: string[];
@@ -167,6 +168,30 @@ export interface TypeScriptQualityDelta {
   touchedNewFindings: TypeScriptQualityFinding[];
   touchedResolvedFindings: TypeScriptQualityFinding[];
   attention: TypeScriptQualityFinding[];
+}
+
+export interface TypeScriptQualityDeltaCoordinationPayload {
+  producer: "typescript.qualityDelta";
+  sourcePath: string | null;
+  status: TypeScriptQualityDelta["status"];
+  touchedFiles: string[];
+  summary: TypeScriptQualityDelta["summary"];
+  attention: TypeScriptQualityDeltaCoordinationFinding[];
+}
+
+export interface TypeScriptQualityDeltaCoordinationFinding {
+  source: TypeScriptQualityFinding["source"] | null;
+  category: TypeScriptQualityFinding["category"] | null;
+  severity: TypeScriptQualityFinding["severity"] | null;
+  rule: string | null;
+  filePath: string | null;
+  line: number | null;
+  message: string | null;
+}
+
+export interface TypeScriptQualityDeltaCoordinationPayloadOptions {
+  sourcePath?: string | null;
+  attentionLimit?: number;
 }
 
 export interface TypeScriptQualityRulePlaybook {
@@ -345,6 +370,7 @@ export function compareTypeScriptQualitySnapshots(
 
   return {
     operation: "typescript.qualityDelta",
+    producer: "typescript.qualityDelta",
     readOnly: true,
     status: deltaStatus(newFindings, resolvedFindings, qualityGateRegressed),
     touchedFiles,
@@ -368,6 +394,27 @@ export function compareTypeScriptQualitySnapshots(
     touchedNewFindings,
     touchedResolvedFindings,
     attention,
+  };
+}
+
+export function typeScriptQualityDeltaCoordinationPayload(
+  delta: TypeScriptQualityDelta,
+  options: TypeScriptQualityDeltaCoordinationPayloadOptions = {},
+): TypeScriptQualityDeltaCoordinationPayload {
+  const attentionLimit =
+    typeof options.attentionLimit === "number" && options.attentionLimit >= 0
+      ? Math.trunc(options.attentionLimit)
+      : delta.attention.length;
+
+  return {
+    producer: "typescript.qualityDelta",
+    sourcePath: normalizedOptionalPath(options.sourcePath),
+    status: delta.status,
+    touchedFiles: [...delta.touchedFiles],
+    summary: { ...delta.summary },
+    attention: delta.attention
+      .slice(0, attentionLimit)
+      .map((finding) => qualityDeltaCoordinationFinding(finding)),
   };
 }
 
@@ -815,6 +862,29 @@ function normalizeTouchedFiles(files: string[] | undefined): string[] {
   }
 
   return [...new Set(files.map(normalizePath))].sort();
+}
+
+function normalizedOptionalPath(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = normalizePath(value);
+  return normalized.length > 0 ? normalized : null;
+}
+
+function qualityDeltaCoordinationFinding(
+  finding: TypeScriptQualityFinding,
+): TypeScriptQualityDeltaCoordinationFinding {
+  return {
+    source: finding.source,
+    category: finding.category,
+    severity: finding.severity,
+    rule: finding.rule,
+    filePath: finding.filePath,
+    line: finding.line,
+    message: finding.message,
+  };
 }
 
 function snapshotStatus(

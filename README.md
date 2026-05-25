@@ -103,6 +103,7 @@ import {
   readTypeScriptQualitySnapshot,
   traceTypeScriptDiagnostics,
   traceTypeScriptProjectStatus,
+  typeScriptQualityDeltaCoordinationPayload,
 } from "@evref-bl/dev-nexus-typescript";
 
 const status = traceTypeScriptProjectStatus({ projectRoot });
@@ -131,6 +132,9 @@ const delta = compareTypeScriptQualitySnapshots({
   before,
   after,
   touchedFiles: ["src/index.ts"],
+});
+const handoffDelta = typeScriptQualityDeltaCoordinationPayload(delta, {
+  sourcePath: ".quality/sonar/delta.json",
 });
 ```
 
@@ -164,9 +168,12 @@ attention to new bugs, vulnerabilities, security hotspots, and critical or
 blocker findings. Rule playbooks cover `typescript:S3776`, `typescript:S5852`,
 and `typescript:S4036`; their references point to SonarSource guidance on
 cognitive complexity, regex backtracking, quality gates, and PATH trust review.
-The plugin advertises these operations through its MCP capability list and
-projects the `typescript-quality-feedback` skill so agents know when to use the
-snapshot, delta, and rule playbook workflow.
+The delta output marks its producer as `typescript.qualityDelta`, and
+`typeScriptQualityDeltaCoordinationPayload` compacts the plugin-specific result
+into the generic DevNexus coordination `qualityDelta` shape. The plugin
+advertises these operations through its MCP capability list and projects the
+`typescript-quality-feedback` skill so agents know when to use the snapshot,
+delta, handoff payload, and rule playbook workflow.
 
 ## Boundaries
 
