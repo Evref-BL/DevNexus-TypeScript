@@ -7,6 +7,7 @@ import {
   createTypeScriptQualityAnalyzer,
   readTypeScriptQualitySnapshot,
   typeScriptQualityFeedbackToolDescriptors,
+  typeScriptQualityDeltaCoordinationPayload,
   typeScriptQualityRulePlaybooks,
   type TypeScriptQualitySnapshot,
 } from "./index.js";
@@ -262,6 +263,7 @@ describe("TypeScript quality feedback", () => {
 
     expect(delta).toMatchObject({
       operation: "typescript.qualityDelta",
+      producer: "typescript.qualityDelta",
       readOnly: true,
       status: "regressed",
       summary: {
@@ -273,5 +275,69 @@ describe("TypeScript quality feedback", () => {
     expect(delta.attention.map((finding) => finding.rule)).toEqual([
       "typescript:S3776",
     ]);
+  });
+
+  it("compacts TypeScript quality deltas for generic coordination handoffs", () => {
+    const projectRoot = makeTempProject("coordination-delta");
+    const after = {
+      ...emptySnapshot(projectRoot),
+      status: "findings",
+      summary: {
+        ...emptySnapshot(projectRoot).summary,
+        findingCount: 2,
+        criticalOrBlockerCount: 2,
+      },
+      findings: [
+        {
+          id: "sonar-issue:complexity",
+          source: "sonar_issue",
+          category: "code_smell",
+          severity: "critical",
+          filePath: "src/index.ts",
+          line: 12,
+          rule: "typescript:S3776",
+          message: "Reduce cognitive complexity.",
+        },
+        {
+          id: "sonar-issue:path",
+          source: "sonar_issue",
+          category: "vulnerability",
+          severity: "blocker",
+          filePath: "src/runner.ts",
+          line: 3,
+          rule: "typescript:S4036",
+          message: "Review PATH trust.",
+        },
+      ],
+    } satisfies TypeScriptQualitySnapshot;
+
+    const delta = compareTypeScriptQualitySnapshots({
+      before: emptySnapshot(projectRoot),
+      after,
+      touchedFiles: ["./src/index.ts", "src/runner.ts"],
+    });
+    const payload = typeScriptQualityDeltaCoordinationPayload(delta, {
+      sourcePath: "./quality/delta.json",
+      attentionLimit: 1,
+    });
+
+    expect(payload).toEqual({
+      producer: "typescript.qualityDelta",
+      sourcePath: "quality/delta.json",
+      status: "regressed",
+      touchedFiles: ["src/index.ts", "src/runner.ts"],
+      summary: delta.summary,
+      attention: [
+        {
+          source: "sonar_issue",
+          category: "code_smell",
+          severity: "critical",
+          rule: "typescript:S3776",
+          filePath: "src/index.ts",
+          line: 12,
+          message: "Reduce cognitive complexity.",
+        },
+      ],
+    });
   });
 });

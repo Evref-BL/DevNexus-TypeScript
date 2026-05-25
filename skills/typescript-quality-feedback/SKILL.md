@@ -23,7 +23,11 @@ Use this skill when working on TypeScript or JavaScript source quality.
 6. Use focused verification first, then the nearest package check. Keep Sonar or
    Docker-backed scans local unless the project has an explicit CI policy.
 7. In the handoff, report the touched-file quality delta, serious remaining
-   findings, verification commands, and any deferred debt.
+   findings, verification commands, and any deferred debt. When using DevNexus
+   coordination handoffs, pass the raw `typescript.qualityDelta` result or the
+   compact `typeScriptQualityDeltaCoordinationPayload` output as the generic
+   `qualityDelta` payload so core records producer, counts, and attention
+   findings without TypeScript-specific core behavior.
 
 ## Rule Playbooks
 
